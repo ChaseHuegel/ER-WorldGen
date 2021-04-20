@@ -1,0 +1,10 @@
+name: EternalRealms-WorldGen
+main: er.seven.worldgen.Main
+version: 1.0
+api-version: 1.16
+load: STARTUP
+depend: [WorldGeneratorApi]
+commands:
+   erworldgen:
+      description: Get EternalRealms WorldGen commands.
+      usage: /erworldgen
