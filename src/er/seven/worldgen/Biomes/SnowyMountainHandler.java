@@ -122,7 +122,7 @@ public class SnowyMountainHandler extends ChunkHandler
 		//	Snow on things!
 		for (y = highestY; y < world.getMaxHeight() - 1; y++)
 		{
-			if (area.getBlock(x, y, z) != Material.GRASS_PATH && area.getBlock(x, y, z).isOccluding() == true && area.getBlock(x, y + 1, z).isOccluding() == false)
+			if (area.getBlock(x, y, z) != Material.DIRT_PATH && area.getBlock(x, y, z).isOccluding() == true && area.getBlock(x, y + 1, z).isOccluding() == false)
 			{
 				if ((BlockUtil.isDirt(area.getBlock(x + 1, y + 1, z)) == true ||
 					BlockUtil.isDirt(area.getBlock(x - 1, y + 1, z)) == true ||

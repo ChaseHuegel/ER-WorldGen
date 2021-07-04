@@ -19,11 +19,11 @@ import nl.rutgerkok.worldgeneratorapi.decoration.DecorationArea;
 
 public class CarvingManager implements Decoration 
 {		
-	public static int caveDepth = 4;
+	public static int caveDepth = -60;
 	public static int maxHeight = 60;
-	public static int minHeight = 2;
-	public static int undergroundSeaLevel = 10;
-	public static int undergroundSeaMaxHeight = 20;
+	public static int minHeight = -62;
+	public static int undergroundSeaLevel = -50;
+	public static int undergroundSeaMaxHeight = -16;
 	public static int massiveCavernMaxHeight = 48;
 	
 	public World world;
@@ -72,7 +72,10 @@ public class CarvingManager implements Decoration
 			int height = highestY - caveDepth;
 		for (int y = minHeight; y < height; y++) {
 		
-		if (y == minHeight) { area.setBlock(realX, y, realZ, Material.STONE); continue; }
+//		if (y == minHeight) { area.setBlock(realX, y, realZ, Material.STONE); continue; }
+		int val = 16 - y; if (val <= 0) val = 1;
+		if (y <= -32 || random.nextInt(val) > 8) area.setBlock(realX, y, realZ, Material.DEEPSLATE);
+		else if (y <= 0) area.setBlock(realX, y, realZ, Material.TUFF);
 		
 		if (area.getBlock(realX, y, realZ) == Material.WATER || area.getBlock(realX, y, realZ) == Material.LAVA) continue;
 		if (area.getBlock(realX, y + 1, realZ) == Material.WATER || area.getBlock(realX, y + 1, realZ) == Material.LAVA) continue;
@@ -95,7 +98,7 @@ public class CarvingManager implements Decoration
 		if (noise < -0.9 ||
 			cavernNoise.GetCellular(realX, y, realZ) < -0.9 ||
 			(passageNoise.GetNoise(realX, y, realZ) > -0.2 && tunnelNoise.GetNoise(realX, y, realZ) > 0) ||
-			(undergroundSeaNoise.GetPerlinFractal(realX, y, realZ) < 0 && y <= undergroundSeaMaxHeight) ||
+			(undergroundSeaNoise.GetPerlinFractal(realX, y, realZ) < 0.05 && y <= undergroundSeaMaxHeight) ||
 			(massiveCavernNoise.GetPerlin(realX, y, realZ) < -0.5 && y <= massiveCavernMaxHeight)
 			)
 		{
