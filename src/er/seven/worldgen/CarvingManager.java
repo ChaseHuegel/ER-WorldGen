@@ -22,8 +22,8 @@ public class CarvingManager implements Decoration
 	public static int caveDepth = -60;
 	public static int maxHeight = 60;
 	public static int minHeight = -62;
-	public static int undergroundSeaLevel = -50;
-	public static int undergroundSeaMaxHeight = -16;
+	public static int undergroundSeaLevel = -54;
+	public static int undergroundSeaMaxHeight = -30;
 	public static int massiveCavernMaxHeight = 48;
 	
 	public World world;
@@ -54,7 +54,7 @@ public class CarvingManager implements Decoration
 		
 		massiveCavernNoise = new FastNoise(); massiveCavernNoise.SetNoiseType(NoiseType.Cellular); massiveCavernNoise.SetFrequency(0.03f);
 		
-		undergroundSeaNoise = new FastNoise(); undergroundSeaNoise.SetNoiseType(NoiseType.Perlin); undergroundSeaNoise.SetFrequency(0.05f);
+		undergroundSeaNoise = new FastNoise(); undergroundSeaNoise.SetNoiseType(NoiseType.Perlin); undergroundSeaNoise.SetFrequency(0.035f);
 	}
 	
 	@Override
@@ -121,31 +121,15 @@ public class CarvingManager implements Decoration
 		
 		if (y <= undergroundSeaLevel && (area.getBlock(realX, y, realZ) == Material.CAVE_AIR || material == Material.CAVE_AIR))
 		{
-			if (undergroundSeaNoise.GetPerlinFractal(realX, y, realZ) > 0)
+			material = Material.WATER;
+			if (area.getBlock(realX + 1, y, realZ) == Material.LAVA || 
+				area.getBlock(realX - 1, y, realZ) == Material.LAVA ||
+				area.getBlock(realX, y, realZ + 1) == Material.LAVA || 
+				area.getBlock(realX, y, realZ + 1) == Material.LAVA || 
+				area.getBlock(realX, y + 1, realZ) == Material.LAVA || 
+				area.getBlock(realX, y - 1, realZ) == Material.LAVA)
 			{
-				material = Material.LAVA;
-				if (area.getBlock(realX + 1, y, realZ) == Material.WATER || 
-					area.getBlock(realX - 1, y, realZ) == Material.WATER ||
-					area.getBlock(realX, y, realZ + 1) == Material.WATER || 
-					area.getBlock(realX, y, realZ + 1) == Material.WATER || 
-					area.getBlock(realX, y + 1, realZ) == Material.WATER || 
-					area.getBlock(realX, y - 1, realZ) == Material.WATER)
-				{
-					material = Material.OBSIDIAN;
-				}
-			}
-			else
-			{
-				material = Material.WATER;
-				if (area.getBlock(realX + 1, y, realZ) == Material.LAVA || 
-					area.getBlock(realX - 1, y, realZ) == Material.LAVA ||
-					area.getBlock(realX, y, realZ + 1) == Material.LAVA || 
-					area.getBlock(realX, y, realZ + 1) == Material.LAVA || 
-					area.getBlock(realX, y + 1, realZ) == Material.LAVA || 
-					area.getBlock(realX, y - 1, realZ) == Material.LAVA)
-				{
-					material = Material.OBSIDIAN;
-				}
+				material = Material.OBSIDIAN;
 			}
 		}
 		

@@ -5,6 +5,7 @@ public class Util
 	public static float 	clamp(float val, float min, float max) { return Math.max(min, Math.min(max, val)); }
 	public static double 	clamp(double val, double min, double max) { return Math.max(min, Math.min(max, val)); }
 	public static Integer 	clamp(Integer val, Integer min, Integer max) { return Math.max(min, Math.min(max, val)); }
+	public static int 		clamp(int val, int min, int max) { return Math.max(min, Math.min(max, val)); }
 	
 	public static float 	mapToRange(float val, float oldMin, float oldMax, float newMin, float newMax) { return (val - oldMin)/(oldMax - oldMin) * (newMax - newMin) + newMin; }
 	public static double	mapToRange(double val, double oldMin, double oldMax, double newMin, double newMax) { return (val - oldMin)/(oldMax - oldMin) * (newMax - newMin) + newMin; }

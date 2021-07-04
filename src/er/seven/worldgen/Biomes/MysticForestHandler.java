@@ -28,7 +28,7 @@ public class MysticForestHandler extends ChunkHandler
 			Material.NETHER_SPROUTS, 6,
 			Material.CRIMSON_FUNGUS, 1,
 			Material.WARPED_FUNGUS, 1,
-			Material.SHROOMLIGHT, 1 };
+			Material.LIGHT, 1 };
 	
 	//	STRATA
 	private static Object[] StrataLayers = new Object[] {

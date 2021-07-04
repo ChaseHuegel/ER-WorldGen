@@ -9,11 +9,14 @@ import java.util.Random;
 import org.bukkit.Axis;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Tag;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.MultipleFacing;
 import org.bukkit.block.data.Orientable;
+import org.bukkit.block.data.type.PointedDripstone;
+import org.bukkit.block.data.type.PointedDripstone.Thickness;
 import org.bukkit.loot.LootTables;
 
 import Structures.StructureData;
@@ -222,36 +225,166 @@ public class GenUtil
 	public static boolean GenerateVine(Random random, DecorationArea area, int x, int y, int z, int maxLength)
 	{
 		MultipleFacing facing = (MultipleFacing)Material.VINE.createBlockData();
-		BlockFace face = BlockFace.EAST;
+		BlockFace face = null;
 		
-		if (area.getBlock(x, y, z).isOccluding() == true || 
-			(area.getBlock(x + 1, y, z).isOccluding() == false &&
-			area.getBlock(x - 1, y, z).isOccluding() == false &&
-			area.getBlock(x, y, z + 1).isOccluding() == false &&
-			area.getBlock(x, y, z - 1).isOccluding() == false)) 
+		if (area.getBlock(x, y, z).isSolid() == false)
 		{ 
-			return false; 
-		}
-		
-		if (area.getBlock(x + 1, y, z).isOccluding() == true) { face = BlockFace.EAST; }
-		else if (area.getBlock(x - 1, y, z).isOccluding() == true) { face = BlockFace.WEST; }
-		else if (area.getBlock(x, y, z + 1).isOccluding() == true) { face = BlockFace.NORTH; }
-		else if (area.getBlock(x, y, z - 1).isOccluding() == true) { face = BlockFace.SOUTH; }
-		facing.setFace(face.getOppositeFace(), true);
-		
-		area.setBlock(x, y, z, Material.VINE);
-		area.setBlockData(x, y, z, facing);
-		
-		for (int n = 1; n < random.nextInt(maxLength) + 1; n++)
-		{
-			if (area.getBlock(x, y - n, z).isOccluding() == false)
+			if (area.getBlock(x + 1, y, z).isSolid() == true) { face = BlockFace.EAST; facing.setFace(face.getOppositeFace(), true); }
+			if (area.getBlock(x - 1, y, z).isSolid() == true) { face = BlockFace.WEST; facing.setFace(face.getOppositeFace(), true); }
+			if (area.getBlock(x, y, z + 1).isSolid() == true) { face = BlockFace.NORTH; facing.setFace(face.getOppositeFace(), true); }
+			if (area.getBlock(x, y, z - 1).isSolid() == true) { face = BlockFace.SOUTH; facing.setFace(face.getOppositeFace(), true); }
+			if (area.getBlock(x, y + 1, z).isSolid() == true) { face = BlockFace.DOWN; facing.setFace(face.getOppositeFace(), true); }
+			if (area.getBlock(x, y - 1, z).isSolid() == true) { face = BlockFace.UP; facing.setFace(face.getOppositeFace(), true); }
+			
+			if (face != null)
 			{
-				area.setBlock(x, y - n, z, Material.VINE);
-				area.setBlockData(x, y - n, z, facing);
+				area.setBlock(x, y, z, Material.VINE);
+				area.setBlockData(x, y, z, facing);
+				
+				for (int n = 1; n < random.nextInt(maxLength) + 1; n++)
+				{
+					if (area.getBlock(x, y - n, z).isOccluding() == false)
+					{
+						area.setBlock(x, y - n, z, Material.VINE);
+						area.setBlockData(x, y - n, z, facing);
+					}
+				}
+				
+				return true;
 			}
 		}
 		
 		return true;
+	}
+	
+	public static boolean GenerateRoots(Random random, DecorationArea area, int x, int y, int z)
+	{
+		if (area.getBlock(x, y, z).isSolid() == false && BlockUtil.isEarthy(area.getBlock(x, y + 1, z)))
+		{ 
+			area.setBlock(x, y, z, Material.HANGING_ROOTS);
+			
+			return true;
+		}
+		
+		return false;
+	}
+	
+	public static boolean GenerateLichen(Random random, DecorationArea area, int x, int y, int z)
+	{
+		MultipleFacing facing = (MultipleFacing)Material.GLOW_LICHEN.createBlockData();
+		BlockFace face = null;
+		
+		if (area.getBlock(x, y, z).isSolid() == false && BlockUtil.isEarthy(area.getBlock(x, y, z)))
+		{ 
+			if (area.getBlock(x, y + 1, z).isSolid() == true) { face = BlockFace.DOWN; facing.setFace(face.getOppositeFace(), true); }
+			if (area.getBlock(x, y - 1, z).isSolid() == true) { face = BlockFace.UP; facing.setFace(face.getOppositeFace(), true); }
+			
+			if (face != null)
+			{
+				area.setBlock(x, y, z, Material.GLOW_LICHEN);
+				area.setBlockData(x, y, z, facing);
+				
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
+	public static boolean GenerateDripstone(Random random, DecorationArea area, int x, int y, int z, int maxLength)
+	{
+		if (maxLength <= 0) maxLength = 1;
+		int targetLength = random.nextInt(maxLength) + 1;
+		int length = 0;
+		int dir = 1;
+		int mergeAt = 0;
+		boolean shouldMerge = false;
+		
+		PointedDripstone dripstone = (PointedDripstone)Material.POINTED_DRIPSTONE.createBlockData();
+		
+		if (area.getBlock(x, y, z) == Material.DRIPSTONE_BLOCK)
+			if (area.getBlock(x, y + 1, z).isSolid() == false)
+				y++;
+			else
+				y--;
+		
+		if (area.getBlock(x, y, z).isSolid() == false)
+		{
+			//	Find a direction to grow in or else return
+			if (area.getBlock(x, y + 1, z).isSolid() == false) dir = 1;
+			else if (area.getBlock(x, y - 1, z).isSolid() == false) dir = -1;
+			else return false;
+			
+			if (dir == 1)
+				dripstone.setVerticalDirection(BlockFace.UP);
+			else
+				dripstone.setVerticalDirection(BlockFace.DOWN);
+			
+			//	Calculate the length and determine merge behavior
+			for (int n = 1; n < targetLength; n++)
+			{
+				if (area.getBlock(x, y + (n*dir), z) == Material.POINTED_DRIPSTONE)
+					break;
+				
+				if (area.getBlock(x, y + (n*dir), z).isSolid() == false)
+					length++;
+				else if (length > 2)
+					shouldMerge = true;	//	Should merge if the dripstone would touch the ground
+			}
+			
+			mergeAt = Math.round(length/2);
+			dripstone.setThickness(Thickness.TIP);
+			
+			//	Create the dripstone
+			for (int n = 1; length > 1 && n <= length; n++)
+			{
+				dripstone.setThickness(Thickness.MIDDLE);
+				
+				if (shouldMerge)
+				{
+					if (n >= mergeAt - 1 && n <= mergeAt + 1)
+					{
+						if (n == mergeAt || n == mergeAt + 1)
+							dripstone.setThickness(Thickness.TIP_MERGE);
+						else
+							dripstone.setThickness(Thickness.FRUSTUM);
+						
+						if (n == (length/2) + 1)
+						{
+							//	Flip direction as we grow the merged half
+							if (dir == 1)
+								dripstone.setVerticalDirection(BlockFace.DOWN);
+							else
+								dripstone.setVerticalDirection(BlockFace.UP);
+						}
+					}
+					else if (n == length)
+						dripstone.setThickness(Thickness.BASE);
+				}
+				else
+				{
+					if (n == length-1)
+						dripstone.setThickness(Thickness.FRUSTUM);
+					if (n == length)
+						dripstone.setThickness(Thickness.TIP);
+				}
+				
+				dripstone.setWaterlogged(area.getBlock(x, y + (n*dir), z) == Material.WATER);
+				
+				area.setBlock(x, y + (n*dir), z, Material.POINTED_DRIPSTONE);					
+				area.setBlockData(x, y + (n*dir), z, dripstone);
+				
+				dripstone.setThickness(Thickness.BASE);
+			}
+			
+			dripstone.setWaterlogged(area.getBlock(x, y, z) == Material.WATER);
+			area.setBlock(x, y, z, Material.POINTED_DRIPSTONE);
+			area.setBlockData(x, y, z, dripstone);
+			
+			return true;
+		}
+		
+		return false;
 	}
 	
 	public static Material GenerateStrata(Random random, DecorationArea area, int x, int y, int z, Object[] layers)

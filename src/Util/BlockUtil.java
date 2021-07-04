@@ -69,10 +69,16 @@ public class BlockUtil
 		return (material == Material.DIRT ||
 				material == Material.COARSE_DIRT||
 				material == Material.GRASS_BLOCK||
+				material == Material.MOSS_BLOCK||
 				material == Material.PODZOL ||
 				material == Material.MYCELIUM ||
 				material == Material.CRIMSON_NYLIUM ||
 				material == Material.WARPED_NYLIUM);
+	}
+	
+	public static boolean isEarthy(Material material)
+	{
+		return Tag.BASE_STONE_OVERWORLD.getValues().contains(material) || isDirt(material);
 	}
 	
 	public static boolean isStoneBricks(Material material)

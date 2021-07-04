@@ -10,6 +10,8 @@ import org.bukkit.block.Biome;
 import Util.BlockUtil;
 import Util.FastNoise;
 import Util.GenUtil;
+import Util.Util;
+import er.seven.worldgen.Caves.BaseCaveHandler;
 import Util.FastNoise.NoiseType;
 import nl.rutgerkok.worldgeneratorapi.decoration.Decoration;
 import nl.rutgerkok.worldgeneratorapi.decoration.DecorationArea;
@@ -27,6 +29,7 @@ public class PopulatorManager implements Decoration //Listener
 	public static float ruinsThreshold	= 0.5f;
 	public static float ruinsChance		= 0.005f;
 	
+	private BaseCaveHandler baseCaveHandler;
 	private FastNoise ruinsNoise;
 	
 	public World world;
@@ -37,6 +40,8 @@ public class PopulatorManager implements Decoration //Listener
 		ruinsNoise = new FastNoise();
 		ruinsNoise.SetNoiseType(NoiseType.Perlin);
 		ruinsNoise.SetFrequency(0.0075f);
+		
+		baseCaveHandler = new BaseCaveHandler();
 	}
 	
 	@Override
@@ -93,8 +98,12 @@ public class PopulatorManager implements Decoration //Listener
 			{
 				boolean foundBiome = false;
 				
+				int safeX = area.getCenterX() - DecorationArea.DECORATION_RADIUS + Util.clamp(x, 4, 12);
+				int safeZ = area.getCenterZ() - DecorationArea.DECORATION_RADIUS + Util.clamp(z, 4, 12);
+				
 				realX = area.getCenterX() - DecorationArea.DECORATION_RADIUS + x;
 				realZ = area.getCenterZ() - DecorationArea.DECORATION_RADIUS + z;
+				highestY = area.getHighestBlockYAt(realX, realZ);
 				
 				Biome biome = area.getBiome(realX, realZ);
 				
@@ -147,6 +156,25 @@ public class PopulatorManager implements Decoration //Listener
 						}
 					}
 				}
+				
+				//	Caves
+				for (int i = 0; i < Main.getCaveHandlers().length; i++)
+				{
+					if (Main.getCaveHandlers()[i].getValidBiomes().contains(biome) == true)
+					{
+						Main.getCaveHandlers()[i].PopulateAt(random, realX, highestY, realZ, area, world);
+						
+						if (firstPass == true)
+							Main.getCaveHandlers()[i].PlaceStructure(random, area, world);
+						
+						foundBiome = true;
+						firstPass = false;
+						break;
+					}
+				}
+				
+				//	Run base cave decorator
+				baseCaveHandler.PopulateAt(random, realX, highestY, realZ, area, world);
 			}
 		}
     }

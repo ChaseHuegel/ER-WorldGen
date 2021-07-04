@@ -35,6 +35,7 @@ import Util.FastNoise;
 import Util.GenUtil;
 import Util.FastNoise.NoiseType;
 import er.seven.worldgen.Biomes.*;
+import er.seven.worldgen.Caves.*;
 import net.md_5.bungee.api.ChatColor;
 import nl.rutgerkok.doughworldgenerator.ImporterForCustomized;
 import nl.rutgerkok.doughworldgenerator.PluginConfig;
@@ -103,6 +104,16 @@ public class Main extends JavaPlugin
     {
     	Main.Instance().mobSpawnerLocations.add(new Location(world, x, y, z));
     	Main.Instance().mobSpawnerEntities.add(mob);
+    }
+    
+    public CaveHandler[] caveHandlers = new CaveHandler[] 
+    		{
+    				new IceCaveHandler()
+    		};
+    
+    public static CaveHandler[] getCaveHandlers()
+    {
+    	return Main.Instance().caveHandlers;
     }
     
     public ChunkHandler[] chunkHandlers = new ChunkHandler[] 
@@ -211,9 +222,9 @@ public class Main extends JavaPlugin
         	generator.getWorldDecorator().setDefaultDecoratorsEnabled(DecorationType.LAKES, false);
 //        	generator.getWorldDecorator().setDefaultBaseDecoratorsEnabled(BaseDecorationType.CARVING_LIQUID, false);
 //        	generator.getWorldDecorator().setDefaultBaseDecoratorsEnabled(BaseDecorationType.CARVING_AIR, false);
-        	generator.getWorldDecorator().withCustomDecoration(DecorationType.UNDERGROUND_DECORATION, new CarvingManager( plugin.getServer().getWorld(worldName) ));
+        	generator.getWorldDecorator().withCustomDecoration(DecorationType.RAW_GENERATION, new CarvingManager( plugin.getServer().getWorld(worldName) ));
         	generator.getWorldDecorator().setDefaultDecoratorsEnabled(DecorationType.VEGETAL_DECORATION, false);
-        	generator.getWorldDecorator().withCustomDecoration(DecorationType.VEGETAL_DECORATION, new GeneratorManager( plugin.getServer().getWorld(worldName) ));
+        	generator.getWorldDecorator().withCustomDecoration(DecorationType.UNDERGROUND_DECORATION, new GeneratorManager( plugin.getServer().getWorld(worldName) ));
         	generator.getWorldDecorator().withCustomDecoration(DecorationType.VEGETAL_DECORATION, new PopulatorManager( plugin.getServer().getWorld(worldName) ));
         	
         	BiomeGenerator vanillaBiomeGenerator = generator.getBiomeGenerator();

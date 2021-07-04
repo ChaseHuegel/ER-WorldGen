@@ -5,6 +5,7 @@ import java.util.Random;
 import org.bukkit.World;
 import org.bukkit.block.Biome;
 
+import Util.BlockUtil;
 import nl.rutgerkok.worldgeneratorapi.decoration.Decoration;
 import nl.rutgerkok.worldgeneratorapi.decoration.DecorationArea;
 
@@ -27,8 +28,22 @@ public class GeneratorManager implements Decoration
 				
 				int realX = area.getCenterX() - DecorationArea.DECORATION_RADIUS + x;
 				int realZ = area.getCenterZ() - DecorationArea.DECORATION_RADIUS + z;
+				int highestY = area.getHighestBlockYAt(realX, realZ);
 				
 				Biome biome = area.getBiome(realX, realZ);
+				
+				//	Handle caves first
+				for (int i = 0; i < Main.getCaveHandlers().length; i++)
+				{
+					if (Main.getCaveHandlers()[i].getValidBiomes().contains(biome) == true)
+					{
+						for (int depth = 0; depth < highestY; depth++)
+							Main.getCaveHandlers()[i].GenerateAt(random, realX, depth, realZ, area, world);
+						
+						foundBiome = true;
+						break;
+					}
+				}
 				
 				//	Run secondary biomes first if we are in the 2nd biome layer
 				if (Main.GetAltBiomeNoise().GetSimplexFractal(realX, realZ) < 0)
@@ -36,7 +51,7 @@ public class GeneratorManager implements Decoration
 					for (int i = 0; i < Main.getAltChunkHandlers().length; i++)
 					{
 						if (Main.getAltChunkHandlers()[i].getValidBiomes().contains(biome) == true)
-						{
+						{							
 							Main.getAltChunkHandlers()[i].GenerateAt(random, realX, realZ, area, world);
 							
 							foundBiome = true;
@@ -47,11 +62,11 @@ public class GeneratorManager implements Decoration
 				
 				//	No secondary biome, default to the main biome
 				if (foundBiome == false)
-				{
+				{					
 					for (int i = 0; i < Main.getChunkHandlers().length; i++)
 					{
 						if (Main.getChunkHandlers()[i].getValidBiomes().contains(biome) == true)
-						{
+						{							
 							Main.getChunkHandlers()[i].GenerateAt(random, realX, realZ, area, world);
 							
 							foundBiome = true;
