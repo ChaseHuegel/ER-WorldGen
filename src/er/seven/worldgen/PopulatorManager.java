@@ -2,7 +2,6 @@ package er.seven.worldgen;
 
 import java.util.Random;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Biome;
@@ -29,8 +28,8 @@ public class PopulatorManager implements Decoration //Listener
 	public static float ruinsThreshold	= 0.5f;
 	public static float ruinsChance		= 0.005f;
 	
-	private BaseCaveHandler baseCaveHandler;
 	private FastNoise ruinsNoise;
+	public BaseCaveHandler baseCaveHandler = new BaseCaveHandler();
 	
 	public World world;
 	public PopulatorManager(World _world)
@@ -40,8 +39,6 @@ public class PopulatorManager implements Decoration //Listener
 		ruinsNoise = new FastNoise();
 		ruinsNoise.SetNoiseType(NoiseType.Perlin);
 		ruinsNoise.SetFrequency(0.0075f);
-		
-		baseCaveHandler = new BaseCaveHandler();
 	}
 	
 	@Override
@@ -92,6 +89,7 @@ public class PopulatorManager implements Decoration //Listener
 		}
 		
 		boolean firstPass = true;
+		boolean firstCavePass = true;
 		for (int x = 0; x < 16; x++) 
 		{
 			for (int z = 0; z < 16; z++) 
@@ -103,7 +101,7 @@ public class PopulatorManager implements Decoration //Listener
 				
 				realX = area.getCenterX() - DecorationArea.DECORATION_RADIUS + x;
 				realZ = area.getCenterZ() - DecorationArea.DECORATION_RADIUS + z;
-				highestY = area.getHighestBlockYAt(realX, realZ);
+				highestY = BlockUtil.getHighestSolidY(realX, realZ, area);//area.getHighestBlockYAt(realX, realZ);
 				
 				Biome biome = area.getBiome(realX, realZ);
 				
@@ -164,17 +162,18 @@ public class PopulatorManager implements Decoration //Listener
 					{
 						Main.getCaveHandlers()[i].PopulateAt(random, realX, highestY, realZ, area, world);
 						
-						if (firstPass == true)
+						if (firstCavePass == true)
 							Main.getCaveHandlers()[i].PlaceStructure(random, area, world);
 						
-						foundBiome = true;
-						firstPass = false;
 						break;
 					}
 				}
 				
-				//	Run base cave decorator
+				//	Base cave decorator
 				baseCaveHandler.PopulateAt(random, realX, highestY, realZ, area, world);
+				if (firstCavePass == true) baseCaveHandler.PlaceStructure(random, area, world);
+				
+				firstCavePass = false;
 			}
 		}
     }

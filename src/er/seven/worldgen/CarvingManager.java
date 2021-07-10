@@ -12,14 +12,13 @@ import Util.BlockUtil;
 import Util.FastNoise;
 import Util.FastNoise.CellularDistanceFunction;
 import Util.FastNoise.CellularReturnType;
-import Util.FastNoise.FractalType;
 import Util.FastNoise.NoiseType;
 import nl.rutgerkok.worldgeneratorapi.decoration.Decoration;
 import nl.rutgerkok.worldgeneratorapi.decoration.DecorationArea;
 
 public class CarvingManager implements Decoration 
 {		
-	public static int caveDepth = -60;
+	public static int caveDepth = 20;
 	public static int maxHeight = 60;
 	public static int minHeight = -62;
 	public static int undergroundSeaLevel = -54;
@@ -35,6 +34,9 @@ public class CarvingManager implements Decoration
 	private FastNoise passageNoise;
 	private FastNoise undergroundSeaNoise;
 	private FastNoise massiveCavernNoise;
+	private FastNoise floodNoise;
+	
+	private FastNoise infestationNoise;
 	
 	private List<Biome> oceanBiomes = Arrays.asList( Biome.COLD_OCEAN, Biome.DEEP_COLD_OCEAN, Biome.DEEP_FROZEN_OCEAN, Biome.DEEP_LUKEWARM_OCEAN,
 			Biome.DEEP_OCEAN, Biome.DEEP_WARM_OCEAN, Biome.FROZEN_OCEAN, Biome.LUKEWARM_OCEAN, Biome.OCEAN, Biome.WARM_OCEAN);
@@ -54,7 +56,13 @@ public class CarvingManager implements Decoration
 		
 		massiveCavernNoise = new FastNoise(); massiveCavernNoise.SetNoiseType(NoiseType.Cellular); massiveCavernNoise.SetFrequency(0.03f);
 		
+		floodNoise = new FastNoise(); floodNoise.SetNoiseType(NoiseType.ValueFractal); floodNoise.SetFrequency(0.03f);
+		
 		undergroundSeaNoise = new FastNoise(); undergroundSeaNoise.SetNoiseType(NoiseType.Perlin); undergroundSeaNoise.SetFrequency(0.035f);
+		
+		infestationNoise = new FastNoise();
+		infestationNoise.SetNoiseType(NoiseType.Simplex);
+		infestationNoise.SetFrequency(0.08f);
 	}
 	
 	@Override
@@ -70,74 +78,69 @@ public class CarvingManager implements Decoration
 			
 			int highestY = BlockUtil.getHighestSolidY(realX, realZ, area);
 			int height = highestY - caveDepth;
-		for (int y = minHeight; y < height; y++) {
-		
-//		if (y == minHeight) { area.setBlock(realX, y, realZ, Material.STONE); continue; }
-		int val = 16 - y; if (val <= 0) val = 1;
-		if (y <= -32 || random.nextInt(val) > 8) area.setBlock(realX, y, realZ, Material.DEEPSLATE);
-		else if (y <= 0) area.setBlock(realX, y, realZ, Material.TUFF);
-		
-		if (area.getBlock(realX, y, realZ) == Material.WATER || area.getBlock(realX, y, realZ) == Material.LAVA) continue;
-		if (area.getBlock(realX, y + 1, realZ) == Material.WATER || area.getBlock(realX, y + 1, realZ) == Material.LAVA) continue;
-		
-		noise = tunnelNoise.GetCellular(realX, y, realZ);
-		noise += baseNoise.GetPerlin(realX, y, realZ);
-//		noise += detailNoise.GetSimplex(realX, y, realZ);
-//		noise += cavernNoise.GetCellular(realX, y, realZ);
-//		noise += lakeNoise.GetCubic(realX, y, realZ);
-		noise /= 2;
-		
-		material = null;
-		
-//		if (noise < -0.9 || 
-//			passageNoise.GetNoise(realX, y, realZ) < -0.6 ||
-//			cavernNoise.GetCellular(realX, y, realZ) < -0.9 ||
-//			(undergroundSeaNoise.GetPerlinFractal(realX, y, realZ) < -0.2 && y <= undergroundSeaMaxHeight) ||
-//			(massiveCavernNoise.GetPerlin(realX, y, realZ) < -0.5 && y <= massiveCavernMaxHeight)
-//			)
-		if (noise < -0.9 ||
-			cavernNoise.GetCellular(realX, y, realZ) < -0.9 ||
-			(passageNoise.GetNoise(realX, y, realZ) > -0.2 && tunnelNoise.GetNoise(realX, y, realZ) > 0) ||
-			(undergroundSeaNoise.GetPerlinFractal(realX, y, realZ) < 0.05 && y <= undergroundSeaMaxHeight) ||
-			(massiveCavernNoise.GetPerlin(realX, y, realZ) < -0.5 && y <= massiveCavernMaxHeight)
-			)
+		for (int y = minHeight; y < height; y++) 
 		{
-			material = Material.CAVE_AIR;
+			material = null;
 			
-			if (oceanBiomes.contains(area.getBiome(realX, realZ)))
+			if (y > -64 && y <= -62)
+			{
+				area.setBlock(realX, y, realZ, Material.DEEPSLATE);
+				continue;
+			}
+			
+			if (BlockUtil.isLiquid(area.getBlock(realX, y, realZ))) continue;
+			
+			int val = 16 - y; if (val <= 0) val = 1;
+			if (y <= -32 || random.nextInt(val) > 8) material = Material.DEEPSLATE;
+			else if (y <= 0) material = Material.TUFF;
+			
+			if (infestationNoise.GetNoise(realX, y, realZ) > 0.8f)
+				if (random.nextFloat()+0.5f < (infestationNoise.GetNoise(realX, y, realZ)+1)/2)
+					if (area.getBlock(realX, y, realZ) == Material.STONE)
+						material = Material.INFESTED_STONE;
+					else if (material == Material.DEEPSLATE)
+						material = Material.INFESTED_DEEPSLATE;
+			
+			noise = tunnelNoise.GetCellular(realX, y, realZ);
+			noise += baseNoise.GetPerlin(realX, y, realZ);
+			noise /= 2;
+			
+			if (noise < -0.9 ||
+				cavernNoise.GetCellular(realX, y, realZ) < -0.9 ||
+				(passageNoise.GetNoise(realX, y, realZ) > -0.2 && tunnelNoise.GetNoise(realX, y, realZ) > 0) ||
+				(undergroundSeaNoise.GetPerlinFractal(realX, y, realZ) < 0.05 && y <= undergroundSeaMaxHeight) ||
+				(massiveCavernNoise.GetPerlin(realX, y, realZ) < -0.5 && y <= massiveCavernMaxHeight)
+				)
+			{
+				material = Material.CAVE_AIR;
+			}
+			
+			if (y <= undergroundSeaLevel && (area.getBlock(realX, y, realZ) == Material.CAVE_AIR || material == Material.CAVE_AIR))
 			{
 				material = Material.WATER;
-				if (area.getBlock(realX + 1, y, realZ) == Material.LAVA || 
-					area.getBlock(realX - 1, y, realZ) == Material.LAVA ||
-					area.getBlock(realX, y, realZ + 1) == Material.LAVA || 
-					area.getBlock(realX, y, realZ + 1) == Material.LAVA || 
-					area.getBlock(realX, y + 1, realZ) == Material.LAVA || 
-					area.getBlock(realX, y - 1, realZ) == Material.LAVA)
+			}
+			
+			if ((material == Material.CAVE_AIR || area.getBlock(realX, y, realZ).isAir()) && floodNoise.GetNoise(realX, y, realZ) >= 0.5)
+			{
+				float value = floodNoise.GetNoise(realX, y, realZ);
+				value = value*2-1f;
+				
+				if (value >= 0.2f)
+					material = Material.WATER;
+				else
 				{
-					material = Material.OBSIDIAN;
+					if (y <= -32 || random.nextInt(val) > 8) material = Material.DEEPSLATE;
+					else if (y <= 0) material = Material.TUFF;
+					else material = Material.STONE;
 				}
 			}
-		}
-		
-		if (y <= undergroundSeaLevel && (area.getBlock(realX, y, realZ) == Material.CAVE_AIR || material == Material.CAVE_AIR))
-		{
-			material = Material.WATER;
-			if (area.getBlock(realX + 1, y, realZ) == Material.LAVA || 
-				area.getBlock(realX - 1, y, realZ) == Material.LAVA ||
-				area.getBlock(realX, y, realZ + 1) == Material.LAVA || 
-				area.getBlock(realX, y, realZ + 1) == Material.LAVA || 
-				area.getBlock(realX, y + 1, realZ) == Material.LAVA || 
-				area.getBlock(realX, y - 1, realZ) == Material.LAVA)
+			
+			if (material != null)
 			{
-				material = Material.OBSIDIAN;
+				area.setBlock(realX, y, realZ, material);
 			}
-		}
 		
-		if (material != null)
-		{
-			area.setBlock(realX, y, realZ, material);
 		}
-		
-		}}}
+		}}
     }
 }

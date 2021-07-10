@@ -6,11 +6,14 @@ import org.bukkit.World;
 import org.bukkit.block.Biome;
 
 import Util.BlockUtil;
+import er.seven.worldgen.Caves.BaseCaveHandler;
 import nl.rutgerkok.worldgeneratorapi.decoration.Decoration;
 import nl.rutgerkok.worldgeneratorapi.decoration.DecorationArea;
 
 public class GeneratorManager implements Decoration 
 {		
+	public BaseCaveHandler baseCaveHandler = new BaseCaveHandler();
+	
 	public World world;
 	public GeneratorManager(World _world)
 	{
@@ -28,20 +31,32 @@ public class GeneratorManager implements Decoration
 				
 				int realX = area.getCenterX() - DecorationArea.DECORATION_RADIUS + x;
 				int realZ = area.getCenterZ() - DecorationArea.DECORATION_RADIUS + z;
-				int highestY = area.getHighestBlockYAt(realX, realZ);
+				int highestY = BlockUtil.getHighestSolidY(realX, realZ, area);
 				
 				Biome biome = area.getBiome(realX, realZ);
+				
+				//	Base cave decorator
+//				baseCaveHandler.GenerateAt(random, realX, highestY, realZ, area, world);
 				
 				//	Handle caves first
 				for (int i = 0; i < Main.getCaveHandlers().length; i++)
 				{
-					if (Main.getCaveHandlers()[i].getValidBiomes().contains(biome) == true)
+					for (int depth = -63; depth < highestY-1; depth++)
 					{
-						for (int depth = 0; depth < highestY; depth++)
-							Main.getCaveHandlers()[i].GenerateAt(random, realX, depth, realZ, area, world);
-						
-						foundBiome = true;
-						break;
+						//	Don't mask air
+						if (BlockUtil.isAir(area.getBlock(realX, depth, realZ)) == false)
+						{
+							if (Main.getCaveHandlers()[i].getValidBiomes().contains(biome) == true)
+							{
+								//	Don't generate on liquid, liquid alterations are a separate method
+								if (BlockUtil.isLiquid(area.getBlock(realX, depth, realZ)) == false)
+									Main.getCaveHandlers()[i].GenerateAt(random, realX, depth, realZ, area, world);
+								else
+									Main.getCaveHandlers()[i].ChangeLiquidAt(random, realX, depth, realZ, area, world);
+								
+								break;
+							}
+						}
 					}
 				}
 				

@@ -5,22 +5,15 @@ import java.util.List;
 import java.util.Random;
 
 import org.bukkit.Material;
-import org.bukkit.Tag;
 import org.bukkit.World;
 import org.bukkit.block.Biome;
-import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.BlockData;
-import org.bukkit.block.data.Snowable;
-import org.bukkit.block.data.type.Cocoa;
 import org.bukkit.block.data.type.SeaPickle;
-import org.bukkit.entity.EntityType;
-
 import Util.BlockUtil;
 import Util.FastNoise;
 import Util.GenUtil;
 import Util.FastNoise.NoiseType;
 import er.seven.worldgen.ChunkHandler;
-import er.seven.worldgen.Main;
 import nl.rutgerkok.worldgeneratorapi.decoration.DecorationArea;
 
 public class MountainSpringsHandler extends ChunkHandler
@@ -227,32 +220,6 @@ public class MountainSpringsHandler extends ChunkHandler
 				BlockUtil.setTallPlant(area, x, y + 1, z, foliageType); break;
 			case SEAGRASS: area.setBlock(x, y + 1, z, foliageType); break;
 			default: break;
-			}
-		}
-		
-		//	Caves
-		for (y = highestY; y > 8; y--)
-		{
-			block = area.getBlock(x, y, z);
-			if (block.isOccluding() == false) { continue; }
-			blockAbove = area.getBlock(x, y + 1, z);
-			
-			//	Stalag above
-			if (random.nextFloat() <= StalagChance && area.getBlock(x, y - 1, z) == Material.CAVE_AIR)
-			{
-				area.setBlock(x, y - 1, z, BlockUtil.getStalagMaterial(block));
-			}
-			
-			//	Stalag below
-			if (random.nextFloat() <= StalagChance && blockAbove == Material.CAVE_AIR)
-			{
-				area.setBlock(x, y + 1, z, BlockUtil.getStalagMaterial(block));
-			}
-			
-			//	Growth
-			if (random.nextFloat() <= CaveGrowthChance && blockAbove == Material.CAVE_AIR)
-			{
-				area.setBlock(x, y + 1, z, BlockUtil.weightedRandomMaterial(random, CaveGrowthTable));
 			}
 		}
 	}

@@ -47,14 +47,6 @@ public class OldForestHandler extends ChunkHandler
 	private static float StumpChance 		= 0.00005f;
 	private static float OutcroppingChance 	= 0.00005f;
 	
-	//	CAVES
-	private static float StalagChance 			= 0.06f;
-	private static float CaveGrowthChance 		= 0.06f;
-	
-	private static Object[] CaveGrowthTable = new Object[] {
-			Material.RED_MUSHROOM, 1,
-			Material.BROWN_MUSHROOM, 1 };
-	
 	@Override
 	public List<Biome> getValidBiomes() { return Arrays.asList( Biome.DARK_FOREST ); }
 	
@@ -170,31 +162,10 @@ public class OldForestHandler extends ChunkHandler
 		{
 			BlockUtil.setFoliage(area, x, y + 1, z, BlockUtil.weightedRandomMaterial(random, foliageTable));
 		}
-		
-		//	Caves
-		for (y = highestY; y > 8; y--)
+		//	Moss
+		else
 		{
-			block = area.getBlock(x, y, z);
-			if (block.isOccluding() == false) { continue; }
-			blockAbove = area.getBlock(x, y + 1, z);
-			
-			//	Stalag above
-			if (random.nextFloat() <= StalagChance && area.getBlock(x, y - 1, z) == Material.CAVE_AIR)
-			{
-				area.setBlock(x, y - 1, z, BlockUtil.getStalagMaterial(block));
-			}
-			
-			//	Stalag below
-			if (random.nextFloat() <= StalagChance && blockAbove == Material.CAVE_AIR)
-			{
-				area.setBlock(x, y + 1, z, BlockUtil.getStalagMaterial(block));
-			}
-			
-			//	Growth
-			if (random.nextFloat() <= CaveGrowthChance && blockAbove == Material.CAVE_AIR)
-			{
-				area.setBlock(x, y + 1, z, BlockUtil.weightedRandomMaterial(random, CaveGrowthTable));
-			}
+			GenUtil.GenerateMoss(random, area, x, y, z);
 		}
 	}
 }

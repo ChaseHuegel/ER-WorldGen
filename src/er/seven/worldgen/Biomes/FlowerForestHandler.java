@@ -34,6 +34,8 @@ public class FlowerForestHandler extends ChunkHandler
 			Material.ROSE_BUSH, 1,
 			Material.LILAC, 1,
 			Material.PEONY, 1,
+			Material.AZALEA, 6,
+			Material.FLOWERING_AZALEA, 6,
 			Material.GRASS, 1000};
 	
 	//	STRATA
@@ -45,14 +47,6 @@ public class FlowerForestHandler extends ChunkHandler
 			Material.GRANITE, 52,
 			Material.BLACKSTONE, 58,
 			Material.BASALT, 61};
-	
-	//	CAVES
-	private static float StalagChance 			= 0.06f;
-	private static float CaveGrowthChance 		= 0.06f;
-	
-	private static Object[] CaveGrowthTable = new Object[] {
-			Material.RED_MUSHROOM, 1,
-			Material.BROWN_MUSHROOM, 1 };
 	
 	@Override
 	public List<Biome> getValidBiomes() { return Arrays.asList( Biome.FLOWER_FOREST ); }
@@ -118,32 +112,6 @@ public class FlowerForestHandler extends ChunkHandler
 			else
 			{
 				area.setBlock(x, y + 1, z, foliageType);
-			}
-		}
-		
-		//	Caves
-		for (y = highestY; y > 8; y--)
-		{
-			block = area.getBlock(x, y, z);
-			if (block.isOccluding() == false) { continue; }
-			blockAbove = area.getBlock(x, y + 1, z);
-			
-			//	Stalag above
-			if (random.nextFloat() <= StalagChance && area.getBlock(x, y - 1, z) == Material.CAVE_AIR)
-			{
-				area.setBlock(x, y - 1, z, BlockUtil.getStalagMaterial(block));
-			}
-			
-			//	Stalag below
-			if (random.nextFloat() <= StalagChance && blockAbove == Material.CAVE_AIR)
-			{
-				area.setBlock(x, y + 1, z, BlockUtil.getStalagMaterial(block));
-			}
-			
-			//	Growth
-			if (random.nextFloat() <= CaveGrowthChance && blockAbove == Material.CAVE_AIR)
-			{
-				area.setBlock(x, y + 1, z, BlockUtil.weightedRandomMaterial(random, CaveGrowthTable));
 			}
 		}
 	}

@@ -124,31 +124,5 @@ public class BadlandsHandler extends ChunkHandler
 		{
 			area.setBlock(x, y + 1, z, Material.DEAD_BUSH);
 		}
-		
-		//	Caves
-		for (y = highestY; y > 8; y--)
-		{
-			block = area.getBlock(x, y, z);
-			if (block.isOccluding() == false) { continue; }
-			blockAbove = area.getBlock(x, y + 1, z);
-			
-			//	Stalag above
-			if (random.nextFloat() <= StalagChance && area.getBlock(x, y - 1, z) == Material.CAVE_AIR)
-			{
-				area.setBlock(x, y - 1, z, BlockUtil.getStalagMaterial(block));
-			}
-			
-			//	Stalag below
-			if (random.nextFloat() <= StalagChance && blockAbove == Material.CAVE_AIR)
-			{
-				area.setBlock(x, y + 1, z, BlockUtil.getStalagMaterial(block));
-			}
-			
-			//	Growth
-			if (random.nextFloat() <= CaveGrowthChance && blockAbove == Material.CAVE_AIR)
-			{
-				area.setBlock(x, y + 1, z, BlockUtil.weightedRandomMaterial(random, CaveGrowthTable));
-			}
-		}
 	}
 }

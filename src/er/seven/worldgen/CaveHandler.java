@@ -27,6 +27,11 @@ public class CaveHandler
 	{
 		
 	}
+	
+	public void ChangeLiquidAt(Random random, int x, int y, int z, DecorationArea area, World world)
+	{
+		
+	}
 
 	public void PopulateAt(Random random, int x, int highestY, int z, DecorationArea area, World world) 
 	{

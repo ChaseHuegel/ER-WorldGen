@@ -103,7 +103,7 @@ public class MireHandler extends ChunkHandler
 				//	Surface
 				if (y == seaLevel && area.getBlock(x, y - 1, z).isOccluding() == true && noise > (random.nextInt(10) * 0.03f) && random.nextInt(10) <= 7)
 				{					
-					if (random.nextBoolean()) replacementMaterial = Material.PODZOL; else replacementMaterial = Material.BROWN_CONCRETE_POWDER;
+					if (random.nextBoolean()) replacementMaterial = Material.PODZOL; else replacementMaterial = Material.ROOTED_DIRT;
 				}
 				//	Crust
 				else if (y <= seaLevel && y >= seaLevel - 3)
@@ -135,7 +135,7 @@ public class MireHandler extends ChunkHandler
 							}
 						}
 						break;
-					case GRASS_BLOCK: 		if (random.nextBoolean()) replacementMaterial = Material.PODZOL; else replacementMaterial = Material.BROWN_CONCRETE_POWDER; break;
+					case GRASS_BLOCK: 		if (random.nextBoolean()) replacementMaterial = Material.PODZOL; else replacementMaterial = Material.ROOTED_DIRT; break;
 					case DIORITE: 			replacementMaterial = Material.GRANITE; break;
 					case ANDESITE: 			replacementMaterial = Material.GRANITE; break;
 					case GRAVEL: 			replacementMaterial = Material.CLAY; break;
@@ -229,32 +229,6 @@ public class MireHandler extends ChunkHandler
 			}
 			
 			BlockUtil.setFoliage(area, x, y + 1, z, foliageType);
-		}
-		
-		//	Caves
-		for (y = highestY; y > 8; y--)
-		{
-			block = area.getBlock(x, y, z);
-			if (block.isOccluding() == false) { continue; }
-			blockAbove = area.getBlock(x, y + 1, z);
-			
-			//	Stalag above
-			if (random.nextFloat() <= StalagChance && area.getBlock(x, y - 1, z) == Material.CAVE_AIR)
-			{
-				area.setBlock(x, y - 1, z, BlockUtil.getStalagMaterial(block));
-			}
-			
-			//	Stalag below
-			if (random.nextFloat() <= StalagChance && blockAbove == Material.CAVE_AIR)
-			{
-				area.setBlock(x, y + 1, z, BlockUtil.getStalagMaterial(block));
-			}
-			
-			//	Growth
-			if (random.nextFloat() <= CaveGrowthChance && blockAbove == Material.CAVE_AIR)
-			{
-				area.setBlock(x, y + 1, z, BlockUtil.weightedRandomMaterial(random, CaveGrowthTable));
-			}
 		}
 	}
 }

@@ -13,7 +13,6 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Biome;
-import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
 import org.bukkit.block.CreatureSpawner;
 import org.bukkit.command.Command;
@@ -22,7 +21,6 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.generator.ChunkGenerator;
-import org.bukkit.loot.LootTable;
 import org.bukkit.loot.LootTables;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
@@ -42,7 +40,6 @@ import nl.rutgerkok.doughworldgenerator.PluginConfig;
 import nl.rutgerkok.doughworldgenerator.chunkgen.ChunkGeneratorOverworld;
 import nl.rutgerkok.doughworldgenerator.chunkgen.OverworldGenSettings;
 import nl.rutgerkok.worldgeneratorapi.*;
-import nl.rutgerkok.worldgeneratorapi.decoration.BaseDecorationType;
 import nl.rutgerkok.worldgeneratorapi.decoration.DecorationType;
 
 public class Main extends JavaPlugin
@@ -77,7 +74,7 @@ public class Main extends JavaPlugin
 	{
 		return Main.Instance().secondaryBiomeNoise;
 	}
-    
+
     public static void SpawnEntity(World world, int x, int y, int z, EntityType entity)
     {
     	SpawnEntity( new Location(world, x, y, z), entity );
@@ -108,7 +105,10 @@ public class Main extends JavaPlugin
     
     public CaveHandler[] caveHandlers = new CaveHandler[] 
     		{
-    				new IceCaveHandler()
+    				new IceCaveHandler(),
+    				new DesertCaveHandler(),
+    				new LavaCavernsHandler(),
+    				new CalciteCaveHandler()
     		};
     
     public static CaveHandler[] getCaveHandlers()
@@ -220,10 +220,10 @@ public class Main extends JavaPlugin
         	generator.setBaseNoiseGenerator(new ChunkGeneratorOverworld(overworldSettings));
         	
         	generator.getWorldDecorator().setDefaultDecoratorsEnabled(DecorationType.LAKES, false);
+        	generator.getWorldDecorator().setDefaultDecoratorsEnabled(DecorationType.VEGETAL_DECORATION, false);
 //        	generator.getWorldDecorator().setDefaultBaseDecoratorsEnabled(BaseDecorationType.CARVING_LIQUID, false);
 //        	generator.getWorldDecorator().setDefaultBaseDecoratorsEnabled(BaseDecorationType.CARVING_AIR, false);
         	generator.getWorldDecorator().withCustomDecoration(DecorationType.RAW_GENERATION, new CarvingManager( plugin.getServer().getWorld(worldName) ));
-        	generator.getWorldDecorator().setDefaultDecoratorsEnabled(DecorationType.VEGETAL_DECORATION, false);
         	generator.getWorldDecorator().withCustomDecoration(DecorationType.UNDERGROUND_DECORATION, new GeneratorManager( plugin.getServer().getWorld(worldName) ));
         	generator.getWorldDecorator().withCustomDecoration(DecorationType.VEGETAL_DECORATION, new PopulatorManager( plugin.getServer().getWorld(worldName) ));
         	
@@ -355,6 +355,12 @@ public class Main extends JavaPlugin
 			{
 				sender.sendMessage(ChatColor.YELLOW + "Moisture: " + player.getWorld().getBlockAt(player.getLocation()).getHumidity() );
 				sender.sendMessage(ChatColor.YELLOW + "Temperature: " + player.getWorld().getBlockAt(player.getLocation()).getTemperature() );
+				
+				return true;
+			}
+			else if (args[0].equalsIgnoreCase("dungeon") && sender.isOp())
+			{
+				Dungeons.GenerateDungeon(player.getWorld(), player.getLocation().getBlockX(), player.getLocation().getBlockY(), player.getLocation().getBlockZ());
 				
 				return true;
 			}

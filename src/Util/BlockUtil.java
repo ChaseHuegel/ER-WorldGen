@@ -7,16 +7,16 @@ import org.bukkit.Chunk;
 import org.bukkit.Material;
 import org.bukkit.Tag;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.data.Ageable;
 import org.bukkit.block.data.Bisected;
 import org.bukkit.block.data.type.Leaves;
-import org.bukkit.loot.LootTables;
-
+import org.bukkit.block.data.type.SeaPickle;
 import nl.rutgerkok.worldgeneratorapi.decoration.DecorationArea;
 
 public class BlockUtil 
-{
+{	
 	public static boolean isSideExposed(DecorationArea area, int x, int y, int z)
 	{
 		return (
@@ -50,13 +50,57 @@ public class BlockUtil
 			);
 	}
 	
+	public static boolean isSideAir(DecorationArea area, int x, int y, int z)
+	{
+		return (
+				area.getBlock(x + 1, y, z).isAir() == false ||
+				area.getBlock(x - 1, y, z).isAir() == false ||
+				area.getBlock(x, y, z + 1).isAir() == false ||
+				area.getBlock(x, y, z - 1).isAir() == false
+			);
+	}
+	
+	public static boolean isSideObscured(DecorationArea area, int x, int y, int z)
+	{
+		return (
+				(!area.getBlock(x + 1, y, z).isOccluding() && !BlockUtil.isLiquid(area.getBlock(x + 1, y, z))) ||
+				(!area.getBlock(x - 1, y, z).isOccluding() && !BlockUtil.isLiquid(area.getBlock(x - 1, y, z))) ||
+				(!area.getBlock(x, y, z + 1).isOccluding() && !BlockUtil.isLiquid(area.getBlock(x, y, z + 1))) ||
+				(!area.getBlock(x, y, z - 1).isOccluding() && !BlockUtil.isLiquid(area.getBlock(x, y, z - 1)))
+			);
+	}
+	
+	public static boolean isMoistGround(DecorationArea area, int x, int y, int z)
+	{
+		//	Moist if this is clay or moss
+		if (area.getBlock(x, y, z) == Material.CLAY || area.getBlock(x, y, z) == Material.MOSS_BLOCK)
+			return true;
+		
+		//	Moist if a submerged dirt block
+		if (area.getBlock(x, y + 1, z) == Material.WATER && (
+			area.getBlock(x, y, z) == Material.DIRT ||
+			area.getBlock(x, y, z) == Material.COARSE_DIRT ||
+			area.getBlock(x, y, z) == Material.FARMLAND ||
+			area.getBlock(x, y, z) == Material.CLAY ||
+			area.getBlock(x, y, z) == Material.GRASS_BLOCK ||
+			area.getBlock(x, y, z) == Material.PODZOL
+			))
+		{
+			return true;
+		}
+		
+		return false;
+	}
+	
 	public static boolean isGroundMaterial(Material material)
 	{
 		return (material == Material.GRASS_BLOCK ||
 				material == Material.PODZOL ||
 				material == Material.DIRT ||
 				material == Material.SAND ||
+				material == Material.CLAY ||
 				material == Material.COARSE_DIRT ||
+				material == Material.ROOTED_DIRT ||
 				material == Material.GRAVEL ||
 				material == Material.MYCELIUM ||
 				material == Material.CRIMSON_NYLIUM ||
@@ -70,6 +114,7 @@ public class BlockUtil
 				material == Material.COARSE_DIRT||
 				material == Material.GRASS_BLOCK||
 				material == Material.MOSS_BLOCK||
+				material == Material.ROOTED_DIRT ||
 				material == Material.PODZOL ||
 				material == Material.MYCELIUM ||
 				material == Material.CRIMSON_NYLIUM ||
@@ -100,6 +145,17 @@ public class BlockUtil
 				material == Material.CAVE_AIR);
 	}
 	
+	public static boolean isLiquid(Material material)
+	{
+		return (material == Material.WATER ||
+				material == Material.LAVA);
+	}
+	
+	public static boolean isSolid(Material material)
+	{
+		return (material.isSolid() && material.isOccluding());
+	}
+	
 	public static boolean isLeaves(Material material)
 	{
 		return Tag.LEAVES.getValues().contains(material);
@@ -118,7 +174,8 @@ public class BlockUtil
 				material == Material.SUNFLOWER ||
 				material == Material.ROSE_BUSH ||
 				material == Material.LILAC ||
-				material == Material.PEONY);
+				material == Material.PEONY ||
+				material == Material.SMALL_DRIPLEAF);
 	}
 	
 	public static boolean isNatural(Material material)
@@ -302,6 +359,10 @@ public class BlockUtil
 	    return randMaterial(rand, stoneBrickSlabs);
 	  }
 	  
+	  public static BlockFace randFacing(Random rand, BlockFace... faces) {
+		  return faces[rand.nextInt(faces.length)];
+	  }
+	  
 	  public static Material randMaterial(Random rand, Material... candidates) {
 	    return candidates[rand.nextInt(candidates.length)];
 	  }
@@ -396,12 +457,30 @@ public class BlockUtil
 	  }
 	  
 	  public static void setTallPlant(DecorationArea area, int x, int y, int z, Material material)
-	  {
-		  area.setBlock(x, y, z, material);
-		  area.setBlock(x, y + 1, z, material);
-		  Bisected data = (Bisected)material.createBlockData();
-		  data.setHalf(Bisected.Half.TOP);
-		  area.setBlockData(x, y + 1, z, data);
+	  {		  
+//		  if (MaterialGroup.WATERLOGGABLE.contains(material))
+//		  {
+//			  boolean waterlogged = area.getBlock(x, y, z) == Material.WATER;
+//			  area.setBlock(x, y, z, material);
+//			  BlockData data = area.getBlockData(x, y, z);
+//			  ((Waterlogged)data).setWaterlogged(waterlogged);
+//			  area.setBlockData(x, y, z, data);
+//			  
+//			  waterlogged = area.getBlock(x, y + 1, z) == Material.WATER;
+//			  Bisected data2 = (Bisected)material.createBlockData();
+//			  data2.setHalf(Bisected.Half.TOP);
+//			  ((Waterlogged)data2).setWaterlogged(waterlogged);
+//			  area.setBlock(x, y + 1, z, material);
+//			  area.setBlockData(x, y + 1, z, data2);
+//		  }
+//		  else
+//		  {
+			  area.setBlock(x, y, z, material);
+			  area.setBlock(x, y + 1, z, material);
+			  Bisected data = (Bisected)material.createBlockData();
+			  data.setHalf(Bisected.Half.TOP);
+			  area.setBlockData(x, y + 1, z, data);
+//		  }
 	  }
 	  
 	  public static void setGrownPlant(DecorationArea area, int x, int y, int z, Material material, boolean randomAge, int minAge, int maxAge)
@@ -456,6 +535,13 @@ public class BlockUtil
 		  else
 		  {
 			  area.setBlock(x, y, z, material);
+			  
+			  if (material == Material.SEA_PICKLE)
+			  {
+				SeaPickle data = (SeaPickle)material.createBlockData();
+				data.setPickles( 1 + (new Random()).nextInt(data.getMaximumPickles()) );
+				area.setBlockData(x, y, z, data);
+			  }
 		  }
 	  }
 	  	  
