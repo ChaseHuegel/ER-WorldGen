@@ -15,6 +15,7 @@ import Util.*;
 import Util.FastNoise.*;
 import er.seven.worldgen.*;
 import er.seven.worldgen.Caves.Decorators.*;
+import er.seven.worldgen.Dungeons.Dungeons;
 import nl.rutgerkok.worldgeneratorapi.decoration.DecorationArea;
 
 public class BaseCaveHandler extends CaveHandler
@@ -45,22 +46,25 @@ public class BaseCaveHandler extends CaveHandler
 		
 		maskNoise = new FastNoise();
 		maskNoise.SetNoiseType(NoiseType.Perlin);
-		maskNoise.SetFrequency(0.03f);
+		maskNoise.SetFrequency(0.015f);
 	}
 	
 	public Cave3DHandler[] decorators3D = new Cave3DHandler[] 
 		{
 				new LushDecorator(),
-				new VolcanicDecorator(),
 				new EarthDecorator(),
+				new VolcanicDecorator(),
+				new MyceliumDecorator(),
+				new LushShroomDecorator(),
+				new CrystalDecorator(),
 				new SlimeDecorator(),
 				new MushroomDecorator(),
-				new CrystalDecorator(),
-				new LushShroomDecorator()
+				new SpikeDecorator()
 		};
 	
 	private float FossilChance = 0.05f;
 	private float StructureChance = 0.05f;
+	private float DungeonChance = 0.01f;
 	
 	private Object[] caveGrowthTable = new Object[]
 		{
@@ -89,7 +93,7 @@ public class BaseCaveHandler extends CaveHandler
 				for (int i = 0; i < decorators3D.length; i++)
 				{
 					float max = placementNoise+1f;
-					float min = max - (0.5f / decorators3D.length);
+					float min = max - (0.25f / decorators3D.length);
 					float value = (i+1)*factor;
 					
 					if (value <= max && value >= min)
@@ -112,7 +116,7 @@ public class BaseCaveHandler extends CaveHandler
 				for (int i = 0; i < decorators3D.length; i++)
 				{
 					float max = placementNoise+1f;
-					float min = max - (0.5f / decorators3D.length);
+					float min = max - (0.25f / decorators3D.length);
 					float value = (i+1)*factor;
 					
 					if (value <= max && value >= min)
@@ -180,9 +184,18 @@ public class BaseCaveHandler extends CaveHandler
 		}
 		if (y < -63) return;	//	Dont place structures if we didn't find a solid point
 		
-		if (random.nextFloat() <= StructureChance)
+		if (random.nextFloat() <= DungeonChance)
+		{
+			Dungeons.GenerateDungeon(random, area, world, x-DecorationArea.DECORATION_RADIUS, y, z-DecorationArea.DECORATION_RADIUS, 
+					7,
+					random.nextInt(4)+1,
+					random.nextInt(4)+1,
+					random.nextInt(10)+1
+				);
+		}
+		else if (random.nextFloat() <= StructureChance)
 		{			
-			GenUtil.GenerateObject(random, area, x, y, z, "loot_stash", world);
+			GenUtil.GenerateObject(random, area, x, y, z, "cave", world);
 		}
 		else if (random.nextFloat() <= FossilChance)
 		{			

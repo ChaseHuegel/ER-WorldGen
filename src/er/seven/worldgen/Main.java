@@ -12,6 +12,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.block.Barrel;
 import org.bukkit.block.Biome;
 import org.bukkit.block.Chest;
 import org.bukkit.block.CreatureSpawner;
@@ -34,6 +35,7 @@ import Util.GenUtil;
 import Util.FastNoise.NoiseType;
 import er.seven.worldgen.Biomes.*;
 import er.seven.worldgen.Caves.*;
+import er.seven.worldgen.Dungeons.Dungeons;
 import net.md_5.bungee.api.ChatColor;
 import nl.rutgerkok.doughworldgenerator.ImporterForCustomized;
 import nl.rutgerkok.doughworldgenerator.PluginConfig;
@@ -58,6 +60,9 @@ public class Main extends JavaPlugin
     
     private List<Location> chestSpawnLocations = new ArrayList<Location>();
     private List<LootTables> chestSpawnTables = new ArrayList<LootTables>();
+    
+    private List<Location> barrelSpawnLocations = new ArrayList<Location>();
+    private List<LootTables> barrelSpawnTables = new ArrayList<LootTables>();
     
     private List<Location> mobSpawnerLocations = new ArrayList<Location>();
     private List<EntityType> mobSpawnerEntities = new ArrayList<EntityType>();
@@ -97,6 +102,17 @@ public class Main extends JavaPlugin
     	Main.Instance().chestSpawnTables.add(lootTable);
     }
     
+    public static void SpawnBarrel(World world, int x, int y, int z, LootTables lootTable)
+    {
+    	SpawnBarrel( new Location(world, x, y, z), lootTable );
+    }
+    
+    public static void SpawnBarrel(Location location, LootTables lootTable)
+    {
+    	Main.Instance().barrelSpawnLocations.add(location);
+    	Main.Instance().barrelSpawnTables.add(lootTable);
+    }
+    
     public static void SetMobSpawner(World world, int x, int y, int z, EntityType mob)
     {
     	Main.Instance().mobSpawnerLocations.add(new Location(world, x, y, z));
@@ -107,7 +123,6 @@ public class Main extends JavaPlugin
     		{
     				new IceCaveHandler(),
     				new DesertCaveHandler(),
-    				new LavaCavernsHandler(),
     				new CalciteCaveHandler()
     		};
     
@@ -295,6 +310,18 @@ public class Main extends JavaPlugin
 				chestSpawnLocations.clear();
 				chestSpawnTables.clear();
 				
+				for (int index = 0; index < barrelSpawnLocations.size(); index++)
+				{				
+					if ( !(barrelSpawnLocations.get(index).getBlock().getState() instanceof Barrel) ) barrelSpawnLocations.get(index).getBlock().setType(Material.BARREL);
+					
+					Barrel barrel = (Barrel)barrelSpawnLocations.get(index).getBlock().getState();
+					barrel.setLootTable(barrelSpawnTables.get(index).getLootTable());
+					barrel.update();
+				}
+				
+				barrelSpawnLocations.clear();
+				barrelSpawnTables.clear();
+				
 				for (int index = 0; index < mobSpawnerLocations.size(); index++)
 				{				
 					if ( !(mobSpawnerLocations.get(index).getBlock().getState() instanceof CreatureSpawner) ) mobSpawnerLocations.get(index).getBlock().setType(Material.SPAWNER);
@@ -360,7 +387,23 @@ public class Main extends JavaPlugin
 			}
 			else if (args[0].equalsIgnoreCase("dungeon") && sender.isOp())
 			{
-				Dungeons.GenerateDungeon(player.getWorld(), player.getLocation().getBlockX(), player.getLocation().getBlockY(), player.getLocation().getBlockZ());
+				Dungeons.GenerateDungeon(
+						player.getWorld(), player.getLocation().getBlockX(),
+						player.getLocation().getBlockY(),
+						player.getLocation().getBlockZ(),
+						7, 4, 4, 4
+						);
+				
+				return true;
+			}
+			else if (args[0].equalsIgnoreCase("tower") && sender.isOp())
+			{
+				Dungeons.GenerateDungeon(
+						player.getWorld(), player.getLocation().getBlockX(),
+						player.getLocation().getBlockY(),
+						player.getLocation().getBlockZ(),
+						7, 2, 2, 10
+						);
 				
 				return true;
 			}

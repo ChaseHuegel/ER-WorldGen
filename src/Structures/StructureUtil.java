@@ -257,6 +257,14 @@ public class StructureUtil
 				{
 					PlaceLootChest(structure, world, pointX, pointY, pointZ);
 				}
+				else if (structure.getMaterial(i) == Material.SPAWNER)
+				{
+					PlaceSpawner(structure, world, pointX, pointY, pointZ);
+				}
+				else if (structure.getMaterial(i) == Material.BARREL)
+				{
+					PlaceLootBarrel(structure, world, pointX, pointY, pointZ);
+				}
 			}
 			else if (area.getBlock(pointX, pointY, pointZ).isAir() == true)
 			{
@@ -276,6 +284,10 @@ public class StructureUtil
 				else if (structure.getMaterial(i) == Material.SPAWNER)
 				{
 					PlaceSpawner(structure, world, pointX, pointY, pointZ);
+				}
+				else if (structure.getMaterial(i) == Material.BARREL)
+				{
+					PlaceLootBarrel(structure, world, pointX, pointY, pointZ);
 				}
 			}
 		}
@@ -332,6 +344,10 @@ public class StructureUtil
 				{
 					PlaceSpawner(structure, world, pointX, pointY, pointZ);
 				}
+				else if (structure.getMaterial(i) == Material.BARREL)
+				{
+					PlaceLootBarrel(structure, world, pointX, pointY, pointZ);
+				}
 			}
 		}
 	}
@@ -366,6 +382,10 @@ public class StructureUtil
 				else if (structure.getMaterial(i) == Material.SPAWNER)
 				{
 					PlaceSpawner(structure, world, pointX, pointY, pointZ);
+				}
+				else if (structure.getMaterial(i) == Material.BARREL)
+				{
+					PlaceLootBarrel(structure, world, pointX, pointY, pointZ);
 				}
 			}
 		}
@@ -446,5 +466,18 @@ public class StructureUtil
 		}
 		
 		Main.SpawnChest(world, x, y, z, table);
+	}
+	
+	public static void PlaceLootBarrel(StructureData structure, World world, int x, int y, int z)
+	{
+		LootTables table = GenUtil.randLootTable(new LootTables[] 
+		{
+			LootTables.ABANDONED_MINESHAFT, LootTables.VILLAGE_ARMORER, LootTables.VILLAGE_BUTCHER,
+			LootTables.VILLAGE_CARTOGRAPHER, LootTables.VILLAGE_FISHER, LootTables.VILLAGE_FLETCHER, 
+			LootTables.VILLAGE_MASON, LootTables.VILLAGE_SHEPHERD, LootTables.VILLAGE_TANNERY,
+			LootTables.VILLAGE_TEMPLE, LootTables.VILLAGE_TOOLSMITH, LootTables.VILLAGE_WEAPONSMITH
+		});
+		
+		Main.SpawnBarrel(world, x, y, z, table);
 	}
 }

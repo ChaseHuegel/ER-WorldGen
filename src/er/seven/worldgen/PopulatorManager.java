@@ -101,7 +101,7 @@ public class PopulatorManager implements Decoration //Listener
 				
 				realX = area.getCenterX() - DecorationArea.DECORATION_RADIUS + x;
 				realZ = area.getCenterZ() - DecorationArea.DECORATION_RADIUS + z;
-				highestY = BlockUtil.getHighestSolidY(realX, realZ, area);//area.getHighestBlockYAt(realX, realZ);
+				highestY = BlockUtil.getHighestGroundedY(realX, realZ, area);//area.getHighestBlockYAt(realX, realZ);
 				
 				Biome biome = area.getBiome(realX, realZ);
 				
@@ -170,7 +170,7 @@ public class PopulatorManager implements Decoration //Listener
 				}
 				
 				//	Base cave decorator
-				baseCaveHandler.PopulateAt(random, realX, highestY, realZ, area, world);
+				baseCaveHandler.PopulateAt(random, realX, highestY-1, realZ, area, world);
 				if (firstCavePass == true) baseCaveHandler.PlaceStructure(random, area, world);
 				
 				firstCavePass = false;

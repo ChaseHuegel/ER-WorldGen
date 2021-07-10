@@ -1,8 +1,12 @@
 package Util;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.BlockData;
 
 public class BlockDef
@@ -90,5 +94,60 @@ public class BlockDef
 	public Location GetLocation()
 	{
 		return new Location(world, x, y, z);
+	}
+	
+	public static BlockDef GetAt(List<BlockDef> blocks, int x, int y, int z)
+	{		
+		for (int i = 0; i < blocks.size(); i++)
+		{
+			BlockDef def = blocks.get(i);
+			
+			if (def.x == x && def.y == y && def.z == z)
+				return def;
+		}
+		
+		return null;
+	}
+	
+	public static BlockDef GetRelative(List<BlockDef> blocks, int x, int y, int z, BlockFace direction)
+	{		
+		for (int i = 0; i < blocks.size(); i++)
+		{
+			BlockDef def = blocks.get(i);
+			
+			if (def.x == x+direction.getModX() && def.y == y+direction.getModY() && def.z == z+direction.getModZ())
+				return def;
+		}
+		
+		return null;
+	}
+	
+	public static BlockDef GetFirstNeighbor(List<BlockDef> blocks, int x, int y, int z, boolean solid)
+	{		
+		for (int i = 0; i < blocks.size(); i++)
+		{
+			BlockDef def = blocks.get(i);
+			
+			if (GetRelative(blocks, x, y, z, BlockFace.NORTH).material.isSolid() == solid) return def;
+			if (GetRelative(blocks, x, y, z, BlockFace.EAST).material.isSolid() == solid) return def;
+			if (GetRelative(blocks, x, y, z, BlockFace.SOUTH).material.isSolid() == solid) return def;
+			if (GetRelative(blocks, x, y, z, BlockFace.WEST).material.isSolid() == solid) return def;
+		}
+		
+		return null;
+	}
+	
+	public static List<BlockDef> GetNeighbors(List<BlockDef> blocks, int x, int y, int z)
+	{
+		List<BlockDef> neighbors = new ArrayList<BlockDef>();
+		
+		BlockDef neighbor;
+		
+		neighbor = GetRelative(blocks, x, y, z, BlockFace.NORTH); if (neighbor != null) neighbors.add(neighbor);
+		neighbor = GetRelative(blocks, x, y, z, BlockFace.EAST); if (neighbor != null) neighbors.add(neighbor);
+		neighbor = GetRelative(blocks, x, y, z, BlockFace.SOUTH); if (neighbor != null) neighbors.add(neighbor);
+		neighbor = GetRelative(blocks, x, y, z, BlockFace.WEST); if (neighbor != null) neighbors.add(neighbor);
+		
+		return null;
 	}
 }

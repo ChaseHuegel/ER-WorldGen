@@ -35,9 +35,6 @@ public class GeneratorManager implements Decoration
 				
 				Biome biome = area.getBiome(realX, realZ);
 				
-				//	Base cave decorator
-//				baseCaveHandler.GenerateAt(random, realX, highestY, realZ, area, world);
-				
 				//	Handle caves first
 				for (int i = 0; i < Main.getCaveHandlers().length; i++)
 				{
