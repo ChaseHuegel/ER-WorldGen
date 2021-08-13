@@ -59,12 +59,15 @@ public class BaseCaveHandler extends CaveHandler
 				new CrystalDecorator(),
 				new SlimeDecorator(),
 				new MushroomDecorator(),
-				new SpikeDecorator()
+				new SpikeDecorator(),
+				new IceDecorator(),
+				new ColdDecorator(),
+				new CalciteDecorator()
 		};
 	
 	private float FossilChance = 0.05f;
 	private float StructureChance = 0.05f;
-	private float DungeonChance = 0.01f;
+	private float DungeonChance = 0.005f;
 	
 	private Object[] caveGrowthTable = new Object[]
 		{
@@ -184,7 +187,7 @@ public class BaseCaveHandler extends CaveHandler
 		}
 		if (y < -63) return;	//	Dont place structures if we didn't find a solid point
 		
-		if (random.nextFloat() <= DungeonChance)
+		if (random.nextFloat() <= DungeonChance && y <= 30)
 		{
 			Dungeons.GenerateDungeon(random, area, world, x-DecorationArea.DECORATION_RADIUS, y, z-DecorationArea.DECORATION_RADIUS, 
 					7,

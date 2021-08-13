@@ -136,17 +136,17 @@ public class GenUtil
 	
 	public static void GenerateRock(Random rand, DecorationArea area, int x, int y, int z, String category, World world)
 	{
-		StructureUtil.PasteStructure( Instance().rockStructures.get(category).get( rand.nextInt(Instance().rockStructures.get(category).size()) ), x, y, z, area, world, Instance().treeBlacklist);
+		//StructureUtil.PasteStructure( Instance().rockStructures.get(category).get( rand.nextInt(Instance().rockStructures.get(category).size()) ), x, y, z, area, world, Instance().treeBlacklist);
 	}
 	
 	public static void GenerateRock(Random rand, Location loc, String category, World world)
 	{
-		StructureUtil.PasteStructure( Instance().rockStructures.get(category).get( rand.nextInt(Instance().rockStructures.get(category).size()) ), loc);
+		//StructureUtil.PasteStructure( Instance().rockStructures.get(category).get( rand.nextInt(Instance().rockStructures.get(category).size()) ), loc);
 	}
 	
 	public static void GenerateRock(Random rand, Block block, String category, World world)
 	{
-		GenerateTree(rand, block.getLocation(), category, world);
+		//GenerateTree(rand, block.getLocation(), category, world);
 	}
 	
 	public static void GenerateObject(Random rand, DecorationArea area, int x, int y, int z, String category, World world)

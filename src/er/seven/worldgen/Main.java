@@ -71,8 +71,8 @@ public class Main extends JavaPlugin
 	public Main()
 	{		
 		secondaryBiomeNoise = new FastNoise();
-		secondaryBiomeNoise.SetNoiseType(NoiseType.SimplexFractal);
-		secondaryBiomeNoise.SetFrequency(0.005f);
+		secondaryBiomeNoise.SetNoiseType(NoiseType.Cellular);
+		secondaryBiomeNoise.SetFrequency(0.002f);
 	}
 	
 	public static FastNoise GetAltBiomeNoise()
@@ -123,7 +123,8 @@ public class Main extends JavaPlugin
     		{
     				new IceCaveHandler(),
     				new DesertCaveHandler(),
-    				new CalciteCaveHandler()
+    				new CalciteCaveHandler(),
+    				new ColdCaveHandler()
     		};
     
     public static CaveHandler[] getCaveHandlers()

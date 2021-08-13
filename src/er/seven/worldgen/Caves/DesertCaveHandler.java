@@ -16,12 +16,11 @@ import nl.rutgerkok.worldgeneratorapi.decoration.DecorationArea;
 public class DesertCaveHandler extends CaveHandler
 {		
 	@Override
-	public List<Biome> getValidBiomes() { return Arrays.asList( Biome.DESERT, Biome.DESERT_HILLS ); }
+	public List<Biome> getValidBiomes() { return Arrays.asList( Biome.DESERT, Biome.DESERT_HILLS, Biome.DESERT_LAKES ); }
 	
 	@Override
 	public void GenerateAt(Random random, int x, int y, int z, DecorationArea area, World world)
 	{
-		BlockData block = area.getBlockData(x, y, z);
 		Material replacementMaterial = null;
 		
 		if (blobNoise.GetNoise(x, y, z) > 0.5)

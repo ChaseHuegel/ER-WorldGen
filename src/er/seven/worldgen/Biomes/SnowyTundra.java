@@ -71,7 +71,7 @@ public class SnowyTundra extends ChunkHandler
 		//	Rocks
 		if (random.nextFloat() <= RockChance && BlockUtil.isDirt(block) )
 		{
-			GenUtil.GenerateRock(random, area, x, y, z, "Tundra", world);
+			BlockUtil.buildBlob(random, area, x, y, z, 2, 2, 2, Material.STONE);
 		}
 	}
 }

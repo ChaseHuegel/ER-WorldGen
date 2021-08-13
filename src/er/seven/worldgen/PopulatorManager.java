@@ -112,7 +112,7 @@ public class PopulatorManager implements Decoration //Listener
 				}
 				
 				//	Run secondary biomes first if we are in the 2nd biome layer
-				if (Main.GetAltBiomeNoise().GetSimplexFractal(realX, realZ) < 0)
+				if (Main.GetAltBiomeNoise().GetNoise(realX, realZ) < 0)
 				{
 					for (int i = 0; i < Main.getAltChunkHandlers().length; i++)
 					{

@@ -18,7 +18,7 @@ import nl.rutgerkok.worldgeneratorapi.decoration.DecorationArea;
 
 public class CarvingManager implements Decoration 
 {		
-	public static int caveDepth = 20;
+	public static int caveDepth = 6;
 	public static int maxHeight = 60;
 	public static int minHeight = -62;
 	public static int undergroundSeaLevel = -54;
@@ -76,8 +76,16 @@ public class CarvingManager implements Decoration
 			int realX = area.getCenterX() - DecorationArea.DECORATION_RADIUS + x;
 			int realZ = area.getCenterZ() - DecorationArea.DECORATION_RADIUS + z;
 			
-			int highestY = BlockUtil.getHighestSolidY(realX, realZ, area);
+			int highestY = BlockUtil.getHighestGroundedY(realX, realZ, area);
 			int height = highestY - caveDepth;
+			
+			//	Find a cave handler for this column
+			Biome biome = area.getBiome(realX, realZ);
+			CaveHandler caveHandler = null;
+			for (int i = 0; i < Main.getCaveHandlers().length; i++)
+				if (Main.getCaveHandlers()[i].getValidBiomes().contains(biome) == true)
+					caveHandler = Main.getCaveHandlers()[i];
+			
 		for (int y = minHeight; y < height; y++) 
 		{
 			material = null;

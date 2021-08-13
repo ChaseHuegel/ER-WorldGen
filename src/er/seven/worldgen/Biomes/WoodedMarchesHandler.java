@@ -17,8 +17,8 @@ import nl.rutgerkok.worldgeneratorapi.decoration.DecorationArea;
 public class WoodedMarchesHandler extends ChunkHandler
 {
 	//	DECORATION
-	private static float TreeChance = 0.0025f;
-	private static float RockChance = 0.008f;
+	private static float TreeChance = 0.005f;
+	private static float RockChance = 0.005f;
 	
 	private static Object[] foliageTable = new Object[] {
 			Material.PEONY, 1,
@@ -116,7 +116,7 @@ public class WoodedMarchesHandler extends ChunkHandler
 		//	Rocks
 		else if (random.nextFloat() <= RockChance && BlockUtil.isDirt(block) )
 		{
-			GenUtil.GenerateRock(random, area, x, y + 1, z, "WoodedMarches", world);
+			BlockUtil.buildBlob(random, area, x, y, z, 2, 2, 2, Material.STONE);
 		}
 		//	Foliage
 		else if (blockAbove != Material.WATER && BlockUtil.isDirt(block))

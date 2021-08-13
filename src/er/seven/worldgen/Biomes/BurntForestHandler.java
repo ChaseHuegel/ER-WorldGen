@@ -100,7 +100,7 @@ public class BurntForestHandler extends ChunkHandler
 		//	Rocks
 		else if (random.nextFloat() <= RockChance && BlockUtil.isDirt(block) )
 		{
-			if (random.nextBoolean()) GenUtil.GenerateRock(random, area, x, y + 1, z, "Marches", world); else GenUtil.GenerateRock(random, area, x, y, z, "Marches", world);
+			if (random.nextBoolean()) BlockUtil.buildBlob(random, area, x, y, z, 2, 2, 2, Material.STONE);
 		}
 		//	Foliage
 		else if (random.nextFloat() <= FoliageChance && blockAbove != Material.WATER && (block == Material.COARSE_DIRT || block == Material.GRASS_BLOCK))

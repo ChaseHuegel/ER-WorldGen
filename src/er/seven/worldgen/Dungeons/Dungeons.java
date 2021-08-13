@@ -35,8 +35,8 @@ public class Dungeons
 			BlockFace.SOUTH_WEST, BlockFace.SOUTH };
 	
 	public static EntityType[] mobs = new EntityType[] {
-			EntityType.SKELETON, EntityType.ZOMBIE, EntityType.SLIME, EntityType.CAVE_SPIDER, EntityType.SPIDER, EntityType.CREEPER,
-			EntityType.ENDERMITE, EntityType.HUSK, EntityType.MAGMA_CUBE, EntityType.WITHER_SKELETON
+			EntityType.SKELETON, EntityType.ZOMBIE, EntityType.SLIME, EntityType.CAVE_SPIDER, 
+			EntityType.SPIDER, EntityType.CREEPER, EntityType.HUSK
 			};
 	
 	public static DungeonBlockPopulator[] populators = new DungeonBlockPopulator[] {

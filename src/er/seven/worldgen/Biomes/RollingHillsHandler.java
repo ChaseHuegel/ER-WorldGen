@@ -17,12 +17,12 @@ import nl.rutgerkok.worldgeneratorapi.decoration.DecorationArea;
 public class RollingHillsHandler extends ChunkHandler
 {	
 	private static Object[] foliageTable = new Object[] {
-			Material.ALLIUM, 3,
+			Material.ALLIUM, 1,
 			Material.LILY_OF_THE_VALLEY, 1,
 			Material.DANDELION, 1,
-			Material.TALL_GRASS, 2,
-			Material.FERN, 5,
-			Material.GRASS, 75 };
+			Material.TALL_GRASS, 10,
+			Material.FERN, 15,
+			Material.GRASS, 130 };
 	
 	//	STRATA
 	private static Object[] StrataLayers = new Object[] {

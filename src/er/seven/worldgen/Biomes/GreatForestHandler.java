@@ -28,7 +28,7 @@ public class GreatForestHandler extends ChunkHandler
 	
 	//	DECORATION
 	private static float TreeChance = 0.008f;
-	private static float RockChance = 0.01f;
+	private static float RockChance = 0.002f;
 	private static float BushChance = 0.01f;
 	
 	private static Object[] foliageTable = new Object[] {

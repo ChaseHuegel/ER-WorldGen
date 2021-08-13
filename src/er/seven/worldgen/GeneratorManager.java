@@ -31,34 +31,12 @@ public class GeneratorManager implements Decoration
 				
 				int realX = area.getCenterX() - DecorationArea.DECORATION_RADIUS + x;
 				int realZ = area.getCenterZ() - DecorationArea.DECORATION_RADIUS + z;
-				int highestY = BlockUtil.getHighestSolidY(realX, realZ, area);
+				int highestY = BlockUtil.getHighestGroundedY(realX, realZ, area);
 				
 				Biome biome = area.getBiome(realX, realZ);
 				
-				//	Handle caves first
-				for (int i = 0; i < Main.getCaveHandlers().length; i++)
-				{
-					for (int depth = -63; depth < highestY-1; depth++)
-					{
-						//	Don't mask air
-						if (BlockUtil.isAir(area.getBlock(realX, depth, realZ)) == false)
-						{
-							if (Main.getCaveHandlers()[i].getValidBiomes().contains(biome) == true)
-							{
-								//	Don't generate on liquid, liquid alterations are a separate method
-								if (BlockUtil.isLiquid(area.getBlock(realX, depth, realZ)) == false)
-									Main.getCaveHandlers()[i].GenerateAt(random, realX, depth, realZ, area, world);
-								else
-									Main.getCaveHandlers()[i].ChangeLiquidAt(random, realX, depth, realZ, area, world);
-								
-								break;
-							}
-						}
-					}
-				}
-				
 				//	Run secondary biomes first if we are in the 2nd biome layer
-				if (Main.GetAltBiomeNoise().GetSimplexFractal(realX, realZ) < 0)
+				if (Main.GetAltBiomeNoise().GetNoise(realX, realZ) < 0)
 				{
 					for (int i = 0; i < Main.getAltChunkHandlers().length; i++)
 					{

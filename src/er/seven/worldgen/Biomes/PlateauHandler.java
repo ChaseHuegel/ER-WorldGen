@@ -103,7 +103,7 @@ public class PlateauHandler extends ChunkHandler
 		//	Rocks
 		else if (random.nextFloat() <= RockChance && BlockUtil.isDirt(block) )
 		{
-			GenUtil.GenerateRock(random, area, x, y + 1, z, "Plateau", world);
+			BlockUtil.buildBlob(random, area, x, y, z, 2, 2, 2, Material.STONE);
 		}
 		//	Foliage
 		else if (blockAbove != Material.WATER && BlockUtil.isDirt(block))

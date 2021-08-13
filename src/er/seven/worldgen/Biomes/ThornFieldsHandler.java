@@ -124,7 +124,7 @@ public class ThornFieldsHandler extends ChunkHandler
 		//	Rocks
 		else if (random.nextFloat() <= RockChance && BlockUtil.isDirt(block) )
 		{
-			GenUtil.GenerateRock(random, area, x, y + 1, z, "Redwood", world);
+			BlockUtil.buildBlob(random, area, x, y, z, 2, 2, 2, Material.STONE);
 		}
 		//	Fallen Logs
 		else if (random.nextFloat() <= LogChance && BlockUtil.isDirt(block) )
